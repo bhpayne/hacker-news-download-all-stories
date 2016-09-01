@@ -1,3 +1,5 @@
+# https://github.com/minimaxir/hacker-news-download-all-stories/blob/master/hacker_news_getallstories.py
+
 import urllib2
 import json
 import datetime
@@ -9,13 +11,17 @@ from pandas import DataFrame
 ts = str(int(time.time()))
 df = DataFrame()
 hitsPerPage = 1000
+num_comments_threshold=3
+
+# https://hn.algolia.com/api
 requested_keys = ["title","url","points","num_comments","author","created_at_i","objectID"]
 
-i = 0
-
-while True:
+count=0
+#while True:
+while (count<10):
 	try:
-		url = 'https://hn.algolia.com/api/v1/search_by_date?tags=story&hitsPerPage=%s&numericFilters=created_at_i<%s' % (hitsPerPage, ts)
+#		url = 'https://hn.algolia.com/api/v1/search_by_date?tags=story&hitsPerPage=%s&numericFilters=created_at_i<%s' % (hitsPerPage, ts)
+		url = 'https://hn.algolia.com/api/v1/search_by_date?tags=story&hitsPerPage=%s&numericFilters=created_at_i<%s&numericFilters=num_comments<%s' % (hitsPerPage, ts, num_comments_threshold)
 		req = urllib2.Request(url)
 		response = urllib2.urlopen(req)
 		data = json.loads(response.read())
@@ -23,11 +29,12 @@ while True:
 		data = DataFrame(data["hits"])[requested_keys]
 		df = df.append(data,ignore_index=True)
 		ts = data.created_at_i.min()
-		print i
+		print count
 		if (last):
 			break
 		time.sleep(3.6)
-		i += 1
+		count += 1
+		
 
 	except Exception, e:
 		print e
