@@ -18,10 +18,10 @@ requested_keys = ["title","url","points","num_comments","author","created_at_i",
 
 count=0
 #while True:
-while (count<10):
+while (count<100):
 	try:
-#		url = 'https://hn.algolia.com/api/v1/search_by_date?tags=story&hitsPerPage=%s&numericFilters=created_at_i<%s' % (hitsPerPage, ts)
-		url = 'https://hn.algolia.com/api/v1/search_by_date?tags=story&hitsPerPage=%s&numericFilters=created_at_i<%s&numericFilters=num_comments<%s' % (hitsPerPage, ts, num_comments_threshold)
+		url = 'https://hn.algolia.com/api/v1/search_by_date?tags=story&hitsPerPage=%s&numericFilters=created_at_i<%s' % (hitsPerPage, ts)
+#		url = 'https://hn.algolia.com/api/v1/search_by_date?tags=story&hitsPerPage=%s&numericFilters=created_at_i<%s&numericFilters=num_comments<%s' % (hitsPerPage, ts, num_comments_threshold)
 		req = urllib2.Request(url)
 		response = urllib2.urlopen(req)
 		data = json.loads(response.read())
@@ -32,7 +32,7 @@ while (count<10):
 		print count
 		if (last):
 			break
-		time.sleep(3.6)
+		time.sleep(2)
 		count += 1
 		
 
@@ -44,4 +44,6 @@ df["created_at"] = df["created_at_i"].map(lambda x: datetime.datetime.fromtimest
 
 ordered_df = df[["title","url","points","num_comments","author","created_at","objectID"]]
 
-ordered_df.to_csv("hacker_news_stories.csv",encoding='utf-8', index=False)
+ordered_df_no_commas = ordered_df.replace(",","THISWASACOMMA")
+
+ordered_df_no_commas.to_csv("hacker_news_stories.csv",encoding='utf-8', index=False,)
