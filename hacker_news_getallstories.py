@@ -5,6 +5,7 @@ import json
 import datetime
 import time
 import pytz
+import re
 import pandas as pd
 from pandas import DataFrame
 
@@ -44,6 +45,7 @@ df["created_at"] = df["created_at_i"].map(lambda x: datetime.datetime.fromtimest
 
 ordered_df = df[["title","url","points","num_comments","author","created_at","objectID"]]
 
-ordered_df_no_commas = ordered_df.replace(",","THISWASACOMMA")
+#ordered_df_no_commas = ordered_df.replace(",","THISWASACOMMA")
+ordered_df_no_commas = ordered_df.applymap(lambda x:re.sub(',','',str(x)))
 
 ordered_df_no_commas.to_csv("hacker_news_stories.csv",encoding='utf-8', index=False,)
